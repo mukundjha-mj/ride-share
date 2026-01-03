@@ -1,0 +1,48 @@
+# Dependencies
+node_modules/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# Build outputs
+dist/
+build/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Flutter
+app/.dart_tool/
+app/.packages
+app/.pub-cache/
+app/.pub/
+app/build/
+app/*.iml
+app/.metadata
+
+# Android
+app/android/.gradle/
+app/android/local.properties
+app/android/*.jks
+
+# iOS
+app/ios/Pods/
+app/ios/.symlinks/
+app/ios/Flutter/Flutter.framework
+app/ios/Flutter/Flutter.podspec
+
+# Vercel
+.vercel/
