@@ -22,7 +22,9 @@ class RideShareApp extends StatelessWidget {
       child: MaterialApp(
         title: 'RideShare',
         debugShowCheckedModeBanner: false,
-        theme: AppTheme.darkTheme,
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
+        themeMode: ThemeMode.system, // Follows system preference
         home: const SplashScreen(),
       ),
     );

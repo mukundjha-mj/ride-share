@@ -63,7 +63,6 @@ class _ChatsScreenState extends State<ChatsScreen> {
       }
     }
 
-    // Sort by most recent
     chats.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
     setState(() {
@@ -74,53 +73,64 @@ class _ChatsScreenState extends State<ChatsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
 
     if (_chats.isEmpty) {
       return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.chat_bubble_outline, size: 80, color: AppTheme.textHint),
-            const SizedBox(height: 16),
-            Text(
-              'No conversations yet',
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(color: AppTheme.textSecondary),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Join a ride or wait for requests',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton.icon(
-              onPressed: _loadChats,
-              icon: const Icon(Icons.refresh),
-              label: const Text('Refresh'),
-            ),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.chat_bubble_outline,
+                size: 64,
+                color: colorScheme.outline,
+              ),
+              const SizedBox(height: 16),
+              Text('No conversations yet', style: theme.textTheme.titleLarge),
+              const SizedBox(height: 8),
+              Text(
+                'Join a ride or wait for requests',
+                style: theme.textTheme.bodyMedium,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              OutlinedButton.icon(
+                onPressed: _loadChats,
+                icon: const Icon(Icons.refresh),
+                label: const Text('Refresh'),
+              ),
+            ],
+          ),
         ),
       );
     }
 
     return RefreshIndicator(
       onRefresh: _loadChats,
+      color: AppTheme.primaryColor,
       child: ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: _chats.length,
         itemBuilder: (context, index) {
           final chat = _chats[index];
-          return _buildChatTile(chat);
+          return _buildChatTile(chat, theme, colorScheme);
         },
       ),
     );
   }
 
-  Widget _buildChatTile(ChatItem chat) {
+  Widget _buildChatTile(
+    ChatItem chat,
+    ThemeData theme,
+    ColorScheme colorScheme,
+  ) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
@@ -135,28 +145,28 @@ class _ChatsScreenState extends State<ChatsScreen> {
             ),
           ).then((_) => _loadChats());
         },
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
             children: [
-              // Avatar
               CircleAvatar(
-                backgroundColor: chat.isOwner
-                    ? AppTheme.primaryColor.withValues(alpha: 0.2)
-                    : AppTheme.secondaryColor.withValues(alpha: 0.2),
+                backgroundColor:
+                    (chat.isOwner
+                            ? AppTheme.primaryColor
+                            : AppTheme.secondaryColor)
+                        .withOpacity(0.1),
                 child: Text(
                   chat.name[0].toUpperCase(),
                   style: TextStyle(
                     color: chat.isOwner
                         ? AppTheme.primaryColor
                         : AppTheme.secondaryColor,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
               const SizedBox(width: 12),
-              // Content
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -166,19 +176,14 @@ class _ChatsScreenState extends State<ChatsScreen> {
                         Expanded(
                           child: Text(
                             chat.name,
-                            style: Theme.of(context).textTheme.titleMedium,
+                            style: theme.textTheme.titleMedium,
                           ),
                         ),
                         _buildStatusChip(chat.status),
                       ],
                     ),
                     const SizedBox(height: 4),
-                    Text(
-                      chat.subtitle,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppTheme.textSecondary,
-                      ),
-                    ),
+                    Text(chat.subtitle, style: theme.textTheme.bodySmall),
                     const SizedBox(height: 4),
                     Text(
                       chat.isOwner ? 'Your ride' : 'Requested to join',
@@ -192,7 +197,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right, color: AppTheme.textHint),
+              Icon(Icons.chevron_right, color: colorScheme.outline),
             ],
           ),
         ),
@@ -210,22 +215,22 @@ class _ChatsScreenState extends State<ChatsScreen> {
         label = 'Active';
         break;
       case 'accepted':
-        color = AppTheme.successColor;
+        color = AppTheme.secondaryColor;
         label = 'Confirmed';
         break;
       case 'rejected':
-        color = AppTheme.textHint;
+        color = const Color(0xFF6B7280);
         label = 'Closed';
         break;
       default:
-        color = AppTheme.textHint;
+        color = const Color(0xFF6B7280);
         label = status;
     }
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.2),
+        color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(

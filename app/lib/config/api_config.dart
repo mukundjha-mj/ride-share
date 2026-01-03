@@ -1,9 +1,7 @@
 // API Configuration
 class ApiConfig {
-  // For physical device: use your computer's local IP address
-  // For Android emulator: use 10.0.2.2
-  // Make sure your phone is on the same WiFi network as your computer
-  static const String baseUrl = 'http://192.168.1.5:5000';
+  // Production URL
+  static const String baseUrl = 'https://ride-share-prod.vercel.app';
 
   // Auth endpoints
   static const String register = '/auth/register';

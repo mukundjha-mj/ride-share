@@ -11,6 +11,8 @@ class RequestCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final dateFormat = DateFormat('MMM d');
     final timeFormat = DateFormat.jm();
 
@@ -18,7 +20,7 @@ class RequestCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -31,9 +33,7 @@ class RequestCard extends StatelessWidget {
                   const Spacer(),
                   Text(
                     dateFormat.format(request.createdAt),
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppTheme.textSecondary,
-                    ),
+                    style: theme.textTheme.bodySmall,
                   ),
                 ],
               ),
@@ -47,19 +47,19 @@ class RequestCard extends StatelessWidget {
                   children: [
                     Column(
                       children: [
-                        const Icon(
-                          Icons.trip_origin,
-                          color: AppTheme.successColor,
-                          size: 14,
+                        Icon(
+                          Icons.circle,
+                          color: AppTheme.secondaryColor,
+                          size: 10,
                         ),
                         Container(
                           width: 2,
                           height: 16,
-                          color: AppTheme.textHint,
+                          color: colorScheme.outline.withOpacity(0.3),
                         ),
-                        const Icon(
+                        Icon(
                           Icons.location_on,
-                          color: AppTheme.errorColor,
+                          color: AppTheme.primaryColor,
                           size: 14,
                         ),
                       ],
@@ -71,12 +71,12 @@ class RequestCard extends StatelessWidget {
                         children: [
                           Text(
                             request.ride!.from,
-                            style: Theme.of(context).textTheme.bodyMedium,
+                            style: theme.textTheme.bodyMedium,
                           ),
                           const SizedBox(height: 8),
                           Text(
                             request.ride!.to,
-                            style: Theme.of(context).textTheme.bodyMedium,
+                            style: theme.textTheme.bodyMedium,
                           ),
                         ],
                       ),
@@ -89,20 +89,18 @@ class RequestCard extends StatelessWidget {
                 // Time info
                 Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.schedule,
                       size: 14,
-                      color: AppTheme.textSecondary,
+                      color: theme.textTheme.bodySmall?.color,
                     ),
                     const SizedBox(width: 6),
                     Text(
                       '${dateFormat.format(request.ride!.timeStart)} • ${timeFormat.format(request.ride!.timeStart)}',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppTheme.textSecondary,
-                      ),
+                      style: theme.textTheme.bodySmall,
                     ),
                     const Spacer(),
-                    const Icon(Icons.chevron_right, color: AppTheme.textHint),
+                    Icon(Icons.chevron_right, color: colorScheme.outline),
                   ],
                 ),
               ] else
@@ -110,12 +108,10 @@ class RequestCard extends StatelessWidget {
                   children: [
                     Text(
                       'Ride details unavailable',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppTheme.textSecondary,
-                      ),
+                      style: theme.textTheme.bodyMedium,
                     ),
                     const Spacer(),
-                    const Icon(Icons.chevron_right, color: AppTheme.textHint),
+                    Icon(Icons.chevron_right, color: colorScheme.outline),
                   ],
                 ),
             ],
@@ -137,17 +133,17 @@ class RequestCard extends StatelessWidget {
         icon = Icons.schedule;
         break;
       case 'accepted':
-        color = AppTheme.successColor;
+        color = AppTheme.secondaryColor;
         label = 'Confirmed';
         icon = Icons.check_circle;
         break;
       case 'rejected':
-        color = AppTheme.textHint;
+        color = const Color(0xFF6B7280);
         label = 'Closed';
         icon = Icons.remove_circle_outline;
         break;
       default:
-        color = AppTheme.textHint;
+        color = const Color(0xFF6B7280);
         label = status;
         icon = Icons.help_outline;
     }
@@ -155,7 +151,7 @@ class RequestCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.2),
+        color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(

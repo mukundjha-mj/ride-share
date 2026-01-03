@@ -20,14 +20,16 @@ class RideCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final dateFormat = DateFormat('EEE, MMM d');
     final timeFormat = DateFormat.jm();
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -39,14 +41,12 @@ class RideCard extends StatelessWidget {
                   children: [
                     CircleAvatar(
                       radius: 18,
-                      backgroundColor: AppTheme.primaryColor.withValues(
-                        alpha: 0.2,
-                      ),
+                      backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
                       child: Text(
                         ride.owner!.name[0].toUpperCase(),
                         style: const TextStyle(
                           color: AppTheme.primaryColor,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
@@ -54,7 +54,7 @@ class RideCard extends StatelessWidget {
                     Expanded(
                       child: Text(
                         ride.owner!.name,
-                        style: Theme.of(context).textTheme.titleMedium,
+                        style: theme.textTheme.titleMedium,
                       ),
                     ),
                     _buildStatusChip(ride.status),
@@ -63,21 +63,25 @@ class RideCard extends StatelessWidget {
 
               const SizedBox(height: 16),
 
-              // Route
+              // Route visualization
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Column(
                     children: [
-                      const Icon(
-                        Icons.trip_origin,
-                        color: AppTheme.successColor,
-                        size: 16,
+                      Icon(
+                        Icons.circle,
+                        color: AppTheme.secondaryColor,
+                        size: 12,
                       ),
-                      Container(width: 2, height: 24, color: AppTheme.textHint),
-                      const Icon(
+                      Container(
+                        width: 2,
+                        height: 28,
+                        color: colorScheme.outline.withOpacity(0.3),
+                      ),
+                      Icon(
                         Icons.location_on,
-                        color: AppTheme.errorColor,
+                        color: AppTheme.primaryColor,
                         size: 16,
                       ),
                     ],
@@ -87,15 +91,9 @@ class RideCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          ride.from,
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          ride.to,
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
+                        Text(ride.from, style: theme.textTheme.bodyLarge),
+                        const SizedBox(height: 18),
+                        Text(ride.to, style: theme.textTheme.bodyLarge),
                       ],
                     ),
                   ),
@@ -103,38 +101,31 @@ class RideCard extends StatelessWidget {
               ),
 
               const SizedBox(height: 16),
-              const Divider(height: 1),
+              Divider(color: colorScheme.outline.withOpacity(0.2), height: 1),
               const SizedBox(height: 12),
 
               // Time and seats info
               Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.schedule,
                     size: 16,
-                    color: AppTheme.textSecondary,
+                    color: theme.textTheme.bodyMedium?.color,
                   ),
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
                       '${dateFormat.format(ride.timeStart)} • ${timeFormat.format(ride.timeStart)} - ${timeFormat.format(ride.timeEnd)}',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppTheme.textSecondary,
-                      ),
+                      style: theme.textTheme.bodySmall,
                     ),
                   ),
-                  const Icon(
-                    Icons.person,
+                  Icon(
+                    Icons.person_outline,
                     size: 16,
-                    color: AppTheme.textSecondary,
+                    color: theme.textTheme.bodyMedium?.color,
                   ),
                   const SizedBox(width: 4),
-                  Text(
-                    '${ride.seats}',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppTheme.textSecondary,
-                    ),
-                  ),
+                  Text('${ride.seats}', style: theme.textTheme.bodySmall),
                 ],
               ),
 
@@ -148,14 +139,14 @@ class RideCard extends StatelessWidget {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: AppTheme.warningColor.withValues(alpha: 0.2),
+                    color: AppTheme.warningColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const Icon(
-                        Icons.notifications_active,
+                        Icons.notifications_active_outlined,
                         size: 14,
                         color: AppTheme.warningColor,
                       ),
@@ -180,9 +171,6 @@ class RideCard extends StatelessWidget {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () => _handleJoin(context),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                    ),
                     child: const Text('Request to Join'),
                   ),
                 ),
@@ -200,7 +188,7 @@ class RideCard extends StatelessWidget {
 
     switch (status) {
       case 'open':
-        color = AppTheme.successColor;
+        color = AppTheme.secondaryColor;
         label = 'Open';
         break;
       case 'filled':
@@ -212,14 +200,14 @@ class RideCard extends StatelessWidget {
         label = 'Cancelled';
         break;
       default:
-        color = AppTheme.textHint;
+        color = const Color(0xFF6B7280);
         label = status;
     }
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.2),
+        color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
@@ -241,12 +229,11 @@ class RideCard extends StatelessWidget {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Request sent! Opening chat...'),
-          backgroundColor: AppTheme.successColor,
+          backgroundColor: AppTheme.secondaryColor,
           duration: Duration(seconds: 1),
         ),
       );
 
-      // Navigate to chat
       Navigator.push(
         context,
         MaterialPageRoute(

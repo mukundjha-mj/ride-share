@@ -22,7 +22,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // Load data when screen is opened
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<RideProvider>().refreshAll();
     });
@@ -30,8 +29,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
         title: Text(_getTitle()),
         actions: [
@@ -69,33 +69,31 @@ class _HomeScreenState extends State<HomeScreen> {
               label: const Text('Post Ride'),
             )
           : null,
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: AppTheme.surfaceColor,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.2),
-              blurRadius: 10,
-              offset: const Offset(0, -5),
-            ),
-          ],
-        ),
-        child: BottomNavigationBar(
-          currentIndex: _currentIndex,
-          onTap: (index) => setState(() => _currentIndex = index),
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.explore), label: 'Browse'),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.directions_car),
-              label: 'My Rides',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.chat_bubble_outline),
-              label: 'Chats',
-            ),
-            BottomNavigationBarItem(icon: Icon(Icons.send), label: 'Requests'),
-          ],
-        ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: (index) => setState(() => _currentIndex = index),
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.explore_outlined),
+            activeIcon: Icon(Icons.explore),
+            label: 'Browse',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.directions_car_outlined),
+            activeIcon: Icon(Icons.directions_car),
+            label: 'My Rides',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat_bubble_outline),
+            activeIcon: Icon(Icons.chat_bubble),
+            label: 'Chats',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.send_outlined),
+            activeIcon: Icon(Icons.send),
+            label: 'Requests',
+          ),
+        ],
       ),
     );
   }
@@ -121,6 +119,9 @@ class _RideFeed extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Consumer<RideProvider>(
       builder: (context, provider, child) {
         if (provider.isLoading && provider.rides.isEmpty) {
@@ -129,39 +130,39 @@ class _RideFeed extends StatelessWidget {
 
         if (provider.rides.isEmpty) {
           return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.directions_car_outlined,
-                  size: 80,
-                  color: AppTheme.textHint,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'No rides available',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: AppTheme.textSecondary,
+            child: Padding(
+              padding: const EdgeInsets.all(32),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.directions_car_outlined,
+                    size: 64,
+                    color: colorScheme.outline,
                   ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Check back later or post your own ride',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-                const SizedBox(height: 24),
-                ElevatedButton.icon(
-                  onPressed: () => provider.loadRides(),
-                  icon: const Icon(Icons.refresh),
-                  label: const Text('Refresh'),
-                ),
-              ],
+                  const SizedBox(height: 16),
+                  Text('No rides available', style: theme.textTheme.titleLarge),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Check back later or post your own ride',
+                    style: theme.textTheme.bodyMedium,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 24),
+                  OutlinedButton.icon(
+                    onPressed: () => provider.loadRides(),
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Refresh'),
+                  ),
+                ],
+              ),
             ),
           );
         }
 
         return RefreshIndicator(
           onRefresh: () => provider.loadRides(),
+          color: AppTheme.primaryColor,
           child: ListView.builder(
             padding: const EdgeInsets.all(16),
             itemCount: provider.rides.length,

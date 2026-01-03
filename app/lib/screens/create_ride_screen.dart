@@ -37,17 +37,6 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
       initialDate: _selectedDate,
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 30)),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.dark(
-              primary: AppTheme.primaryColor,
-              surface: AppTheme.cardColor,
-            ),
-          ),
-          child: child!,
-        );
-      },
     );
     if (picked != null) {
       setState(() => _selectedDate = picked);
@@ -58,22 +47,10 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
     final picked = await showTimePicker(
       context: context,
       initialTime: _startTime,
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.dark(
-              primary: AppTheme.primaryColor,
-              surface: AppTheme.cardColor,
-            ),
-          ),
-          child: child!,
-        );
-      },
     );
     if (picked != null) {
       setState(() {
         _startTime = picked;
-        // Auto-set end time to 2 hours after start
         _endTime = picked.replacing(hour: (picked.hour + 2) % 24);
       });
     }
@@ -83,17 +60,6 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
     final picked = await showTimePicker(
       context: context,
       initialTime: _endTime,
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.dark(
-              primary: AppTheme.primaryColor,
-              surface: AppTheme.cardColor,
-            ),
-          ),
-          child: child!,
-        );
-      },
     );
     if (picked != null) {
       setState(() => _endTime = picked);
@@ -110,7 +76,6 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
       _startTime.hour,
       _startTime.minute,
     );
-
     final timeEnd = DateTime(
       _selectedDate.year,
       _selectedDate.month,
@@ -155,7 +120,7 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Ride posted successfully!'),
-          backgroundColor: AppTheme.successColor,
+          backgroundColor: AppTheme.secondaryColor,
         ),
       );
       Navigator.pop(context);
@@ -171,11 +136,12 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final dateFormat = DateFormat('EEE, MMM d');
     final timeFormat = DateFormat.jm();
 
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(title: const Text('Post a Ride')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -185,72 +151,71 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // From field
-              Text('From', style: Theme.of(context).textTheme.labelLarge),
+              Text('From', style: theme.textTheme.labelLarge),
               const SizedBox(height: 8),
               TextFormField(
                 controller: _fromController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: 'Starting point (e.g., VIT Main Gate)',
                   prefixIcon: Icon(
-                    Icons.trip_origin,
-                    color: AppTheme.successColor,
+                    Icons.circle,
+                    color: AppTheme.secondaryColor,
+                    size: 12,
                   ),
                 ),
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
+                  if (value == null || value.isEmpty)
                     return 'Please enter starting point';
-                  }
                   return null;
                 },
               ),
               const SizedBox(height: 24),
 
               // To field
-              Text('To', style: Theme.of(context).textTheme.labelLarge),
+              Text('To', style: theme.textTheme.labelLarge),
               const SizedBox(height: 8),
               TextFormField(
                 controller: _toController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: 'Destination (e.g., Chennai Airport)',
                   prefixIcon: Icon(
                     Icons.location_on,
-                    color: AppTheme.errorColor,
+                    color: AppTheme.primaryColor,
                   ),
                 ),
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
+                  if (value == null || value.isEmpty)
                     return 'Please enter destination';
-                  }
                   return null;
                 },
               ),
               const SizedBox(height: 24),
 
               // Date picker
-              Text('Date', style: Theme.of(context).textTheme.labelLarge),
+              Text('Date', style: theme.textTheme.labelLarge),
               const SizedBox(height: 8),
               InkWell(
                 onTap: _selectDate,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(10),
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: AppTheme.surfaceColor,
-                    borderRadius: BorderRadius.circular(12),
+                    color: colorScheme.surface,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: colorScheme.outline.withOpacity(0.3),
+                    ),
                   ),
                   child: Row(
                     children: [
-                      const Icon(
-                        Icons.calendar_today,
-                        color: AppTheme.primaryColor,
-                      ),
+                      Icon(Icons.calendar_today, color: AppTheme.primaryColor),
                       const SizedBox(width: 12),
                       Text(
                         dateFormat.format(_selectedDate),
-                        style: Theme.of(context).textTheme.bodyLarge,
+                        style: theme.textTheme.bodyLarge,
                       ),
                       const Spacer(),
-                      const Icon(Icons.arrow_drop_down),
+                      Icon(Icons.arrow_drop_down, color: colorScheme.outline),
                     ],
                   ),
                 ),
@@ -258,30 +223,26 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
               const SizedBox(height: 24),
 
               // Time window
-              Text(
-                'Time Window',
-                style: Theme.of(context).textTheme.labelLarge,
-              ),
+              Text('Time Window', style: theme.textTheme.labelLarge),
               const SizedBox(height: 8),
               Row(
                 children: [
                   Expanded(
                     child: InkWell(
                       onTap: _selectStartTime,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(10),
                       child: Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: AppTheme.surfaceColor,
-                          borderRadius: BorderRadius.circular(12),
+                          color: colorScheme.surface,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: colorScheme.outline.withOpacity(0.3),
+                          ),
                         ),
                         child: Column(
                           children: [
-                            Text(
-                              'From',
-                              style: Theme.of(context).textTheme.bodySmall
-                                  ?.copyWith(color: AppTheme.textSecondary),
-                            ),
+                            Text('From', style: theme.textTheme.bodySmall),
                             const SizedBox(height: 4),
                             Text(
                               timeFormat.format(
@@ -293,7 +254,7 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
                                   _startTime.minute,
                                 ),
                               ),
-                              style: Theme.of(context).textTheme.titleMedium,
+                              style: theme.textTheme.titleMedium,
                             ),
                           ],
                         ),
@@ -301,28 +262,24 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Icon(
-                    Icons.arrow_forward,
-                    color: AppTheme.textSecondary,
-                  ),
+                  Icon(Icons.arrow_forward, color: colorScheme.outline),
                   const SizedBox(width: 12),
                   Expanded(
                     child: InkWell(
                       onTap: _selectEndTime,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(10),
                       child: Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: AppTheme.surfaceColor,
-                          borderRadius: BorderRadius.circular(12),
+                          color: colorScheme.surface,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: colorScheme.outline.withOpacity(0.3),
+                          ),
                         ),
                         child: Column(
                           children: [
-                            Text(
-                              'To',
-                              style: Theme.of(context).textTheme.bodySmall
-                                  ?.copyWith(color: AppTheme.textSecondary),
-                            ),
+                            Text('To', style: theme.textTheme.bodySmall),
                             const SizedBox(height: 4),
                             Text(
                               timeFormat.format(
@@ -334,7 +291,7 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
                                   _endTime.minute,
                                 ),
                               ),
-                              style: Theme.of(context).textTheme.titleMedium,
+                              style: theme.textTheme.titleMedium,
                             ),
                           ],
                         ),
@@ -346,10 +303,7 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
               const SizedBox(height: 24),
 
               // Seats
-              Text(
-                'Seats Available',
-                style: Theme.of(context).textTheme.labelLarge,
-              ),
+              Text('Seats Available', style: theme.textTheme.labelLarge),
               const SizedBox(height: 8),
               Container(
                 padding: const EdgeInsets.symmetric(
@@ -357,8 +311,11 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
                   vertical: 8,
                 ),
                 decoration: BoxDecoration(
-                  color: AppTheme.surfaceColor,
-                  borderRadius: BorderRadius.circular(12),
+                  color: colorScheme.surface,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: colorScheme.outline.withOpacity(0.3),
+                  ),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -370,12 +327,9 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
                       icon: const Icon(Icons.remove_circle_outline),
                       color: _seats > 1
                           ? AppTheme.primaryColor
-                          : AppTheme.textHint,
+                          : colorScheme.outline,
                     ),
-                    Text(
-                      '$_seats',
-                      style: Theme.of(context).textTheme.headlineMedium,
-                    ),
+                    Text('$_seats', style: theme.textTheme.headlineMedium),
                     IconButton(
                       onPressed: _seats < 4
                           ? () => setState(() => _seats++)
@@ -383,7 +337,7 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
                       icon: const Icon(Icons.add_circle_outline),
                       color: _seats < 4
                           ? AppTheme.primaryColor
-                          : AppTheme.textHint,
+                          : colorScheme.outline,
                     ),
                   ],
                 ),

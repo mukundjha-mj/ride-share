@@ -22,23 +22,22 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 1500),
+      duration: const Duration(milliseconds: 1200),
       vsync: this,
     );
 
     _fadeAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
 
     _scaleAnimation = Tween<double>(
-      begin: 0.8,
+      begin: 0.9,
       end: 1.0,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.elasticOut));
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
 
     _controller.forward();
 
-    // Schedule initialization after the first frame to avoid build-phase errors
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initialize();
     });
@@ -47,9 +46,7 @@ class _SplashScreenState extends State<SplashScreen>
   Future<void> _initialize() async {
     final authProvider = context.read<AuthProvider>();
     await authProvider.initialize();
-
-    // Wait for animation to complete
-    await Future.delayed(const Duration(milliseconds: 2000));
+    await Future.delayed(const Duration(milliseconds: 1500));
 
     if (!mounted) return;
 
@@ -62,7 +59,7 @@ class _SplashScreenState extends State<SplashScreen>
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return FadeTransition(opacity: animation, child: child);
         },
-        transitionDuration: const Duration(milliseconds: 500),
+        transitionDuration: const Duration(milliseconds: 400),
       ),
     );
   }
@@ -75,8 +72,9 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
       body: Center(
         child: AnimatedBuilder(
           animation: _controller,
@@ -88,41 +86,27 @@ class _SplashScreenState extends State<SplashScreen>
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // App Icon
+                    // App Icon - Simple teal container
                     Container(
-                      width: 120,
-                      height: 120,
+                      width: 100,
+                      height: 100,
                       decoration: BoxDecoration(
-                        gradient: AppTheme.primaryGradient,
-                        borderRadius: BorderRadius.circular(30),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppTheme.primaryColor.withValues(alpha: 0.4),
-                            blurRadius: 30,
-                            spreadRadius: 5,
-                          ),
-                        ],
+                        color: AppTheme.primaryColor,
+                        borderRadius: BorderRadius.circular(24),
                       ),
                       child: const Icon(
                         Icons.directions_car_rounded,
-                        size: 60,
+                        size: 50,
                         color: Colors.white,
                       ),
                     ),
                     const SizedBox(height: 24),
                     // App Name
-                    Text(
-                      'RideShare',
-                      style: Theme.of(context).textTheme.headlineLarge
-                          ?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 2,
-                          ),
-                    ),
+                    Text('RideShare', style: theme.textTheme.headlineLarge),
                     const SizedBox(height: 8),
                     Text(
                       'Share your ride, share the journey',
-                      style: Theme.of(context).textTheme.bodyMedium,
+                      style: theme.textTheme.bodyMedium,
                     ),
                     const SizedBox(height: 48),
                     // Loading indicator

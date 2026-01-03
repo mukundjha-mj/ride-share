@@ -51,13 +51,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final newPassword = _newPasswordController.text;
     final confirmPassword = _confirmPasswordController.text;
 
-    // Validate name
     if (name.length < 2) {
       _showError('Name must be at least 2 characters');
       return;
     }
 
-    // Validate password if changing
     if (_showPasswordFields && newPassword.isNotEmpty) {
       if (currentPassword.isEmpty) {
         _showError('Please enter your current password');
@@ -77,7 +75,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     try {
       final body = <String, dynamic>{'name': name};
-
       if (_showPasswordFields && newPassword.isNotEmpty) {
         body['currentPassword'] = currentPassword;
         body['newPassword'] = newPassword;
@@ -86,12 +83,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       final response = await _api.patch(ApiConfig.updateProfile, body);
 
       if (response != null && response['success'] == true) {
-        // Refresh user data
         await context.read<AuthProvider>().initialize();
-
         if (mounted) {
           _showSuccess('Profile updated successfully');
-          // Clear password fields
           _currentPasswordController.clear();
           _newPasswordController.clear();
           _confirmPasswordController.clear();
@@ -115,7 +109,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void _showSuccess(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: AppTheme.successColor),
+      SnackBar(
+        content: Text(message),
+        backgroundColor: AppTheme.secondaryColor,
+      ),
     );
   }
 
@@ -123,7 +120,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: AppTheme.cardColor,
         title: const Text('Logout'),
         content: const Text('Are you sure you want to logout?'),
         actions: [
@@ -153,10 +149,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final user = context.watch<AuthProvider>().user;
 
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(title: const Text('Profile')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -167,7 +164,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               width: 100,
               height: 100,
               decoration: BoxDecoration(
-                gradient: AppTheme.primaryGradient,
+                color: AppTheme.primaryColor,
                 shape: BoxShape.circle,
               ),
               child: Center(
@@ -187,37 +184,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppTheme.surfaceColor,
-                borderRadius: BorderRadius.circular(12),
+                color: colorScheme.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: colorScheme.outline.withOpacity(0.3)),
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.email_outlined, color: AppTheme.textHint),
+                  Icon(Icons.email_outlined, color: colorScheme.outline),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Email',
-                          style: TextStyle(
-                            color: AppTheme.textHint,
-                            fontSize: 12,
-                          ),
-                        ),
+                        Text('Email', style: theme.textTheme.bodySmall),
                         Text(
                           user?.email ?? '',
-                          style: const TextStyle(
-                            color: AppTheme.textPrimary,
-                            fontSize: 16,
-                          ),
+                          style: theme.textTheme.bodyLarge,
                         ),
                       ],
                     ),
                   ),
-                  const Icon(
+                  Icon(
                     Icons.lock_outline,
-                    color: AppTheme.textHint,
+                    color: colorScheme.outline,
                     size: 18,
                   ),
                 ],
@@ -228,9 +217,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             // Name (editable)
             TextField(
               controller: _nameController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Name',
-                prefixIcon: const Icon(Icons.person_outline),
+                prefixIcon: Icon(Icons.person_outline),
               ),
             ),
             const SizedBox(height: 24),
@@ -239,26 +228,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
             InkWell(
               onTap: () =>
                   setState(() => _showPasswordFields = !_showPasswordFields),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(10),
               child: Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: AppTheme.surfaceColor,
-                  borderRadius: BorderRadius.circular(12),
+                  color: colorScheme.surface,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: colorScheme.outline.withOpacity(0.3),
+                  ),
                 ),
                 child: Row(
                   children: [
-                    const Icon(
-                      Icons.lock_outline,
-                      color: AppTheme.primaryColor,
-                    ),
+                    Icon(Icons.lock_outline, color: AppTheme.primaryColor),
                     const SizedBox(width: 12),
                     const Expanded(child: Text('Change Password')),
                     Icon(
                       _showPasswordFields
                           ? Icons.expand_less
                           : Icons.expand_more,
-                      color: AppTheme.textHint,
+                      color: colorScheme.outline,
                     ),
                   ],
                 ),

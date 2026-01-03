@@ -10,6 +10,9 @@ class MyRidesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Consumer<RideProvider>(
       builder: (context, provider, child) {
         if (provider.isLoading && provider.myRides.isEmpty) {
@@ -18,33 +21,36 @@ class MyRidesScreen extends StatelessWidget {
 
         if (provider.myRides.isEmpty) {
           return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.directions_car_outlined,
-                  size: 80,
-                  color: AppTheme.textHint,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'No rides posted yet',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: AppTheme.textSecondary,
+            child: Padding(
+              padding: const EdgeInsets.all(32),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.directions_car_outlined,
+                    size: 64,
+                    color: colorScheme.outline,
                   ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Tap the + button to post your first ride',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-              ],
+                  const SizedBox(height: 16),
+                  Text(
+                    'No rides posted yet',
+                    style: theme.textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Tap the + button to post your first ride',
+                    style: theme.textTheme.bodyMedium,
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
             ),
           );
         }
 
         return RefreshIndicator(
           onRefresh: () => provider.loadMyRides(),
+          color: AppTheme.primaryColor,
           child: ListView.builder(
             padding: const EdgeInsets.all(16),
             itemCount: provider.myRides.length,

@@ -10,33 +10,40 @@ class MyRequestsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Consumer<RideProvider>(
       builder: (context, provider, child) {
         if (provider.myRequests.isEmpty) {
           return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.send_outlined, size: 80, color: AppTheme.textHint),
-                const SizedBox(height: 16),
-                Text(
-                  'No requests sent',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: AppTheme.textSecondary,
+            child: Padding(
+              padding: const EdgeInsets.all(32),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.send_outlined,
+                    size: 64,
+                    color: colorScheme.outline,
                   ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Browse rides and request to join',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-              ],
+                  const SizedBox(height: 16),
+                  Text('No requests sent', style: theme.textTheme.titleLarge),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Browse rides and request to join',
+                    style: theme.textTheme.bodyMedium,
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
             ),
           );
         }
 
         return RefreshIndicator(
           onRefresh: () => provider.loadMyRequests(),
+          color: AppTheme.primaryColor,
           child: ListView.builder(
             padding: const EdgeInsets.all(16),
             itemCount: provider.myRequests.length,
