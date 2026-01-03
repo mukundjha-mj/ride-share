@@ -37,6 +37,9 @@ const connectDB = async () => {
 };
 
 // Middleware
+// Trust proxy for Vercel (required for rate limiting behind reverse proxy)
+app.set('trust proxy', 1);
+
 app.use(cors());
 app.use(express.json({ limit: '10kb' }));
 app.use(apiLimiter);
