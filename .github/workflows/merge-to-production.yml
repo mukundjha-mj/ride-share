@@ -1,0 +1,37 @@
+name: Merge Main to Production
+
+on:
+  # Run every Sunday at midnight UTC (5:30 AM IST)
+  schedule:
+    - cron: '0 0 * * 0'
+  
+  # Allow manual trigger
+  workflow_dispatch:
+
+jobs:
+  merge-to-production:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+
+      - name: Merge main into production
+        run: |
+          git checkout production
+          git merge origin/main --no-edit
+          git push origin production
+
+      - name: Create summary
+        run: |
+          echo "## ✅ Merge Complete" >> $GITHUB_STEP_SUMMARY
+          echo "Main branch merged into production successfully." >> $GITHUB_STEP_SUMMARY
+          echo "Vercel will auto-deploy from production branch." >> $GITHUB_STEP_SUMMARY
