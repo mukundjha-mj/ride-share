@@ -1,14 +1,11 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 // API Configuration
 class ApiConfig {
-  // LOCAL TESTING - Uncomment production URLs before deploying
-  // Use 192.168.1.5 for physical device testing (LAN IP)
-  // use 192.168.1.5 for physical device testing (LAN IP)
-  static const String baseUrl = 'http://192.168.1.5:5000';
-  // static const String websocketUrl = 'http://192.168.1.5:3001';
-
-  // Production URLs (uncomment before building APK)
-  // static const String baseUrl = 'https://ride-share-prod.vercel.app';
-  static const String websocketUrl = 'https://rideshare-websocket.onrender.com';
+  // Production URLs (Loaded from .env)
+  // Production URLs (Loaded from .env)
+  static String get baseUrl => dotenv.env['API_BASE_URL']!;
+  static String get websocketUrl => dotenv.env['WEBSOCKET_URL']!;
 
   // Auth endpoints
   static const String register = '/auth/register';
