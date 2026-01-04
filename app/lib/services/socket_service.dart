@@ -18,8 +18,24 @@ class SocketService {
   Function(dynamic)? onRequestAccepted;
   Function(dynamic)? onRequestRejected;
   Function(dynamic)? onRideFilled;
+  Function(ChatMessage)? onMessageEdited;
+  Function(String)? onMessageDeleted;
+  Function(String, DateTime)? onMessagesRead;
 
   bool get isConnected => _isConnected;
+
+  // Pending listeners queue
+  final List<Map<String, dynamic>> _pendingListeners = [];
+
+  /// Listen to an event
+  void on(String event, Function(dynamic) handler) {
+    if (_socket != null) {
+      _socket!.on(event, handler);
+    } else {
+      print('⏳ Socket not ready, queuing listener for: $event');
+      _pendingListeners.add({'event': event, 'handler': handler});
+    }
+  }
 
   /// Connect to Socket.IO server
   Future<void> connect() async {
@@ -29,7 +45,7 @@ class SocketService {
     if (token == null) return;
 
     _socket = IO.io(
-      ApiConfig.baseUrl,
+      ApiConfig.websocketUrl,
       IO.OptionBuilder()
           .setTransports(['websocket'])
           .setAuth({'token': token})
@@ -37,6 +53,15 @@ class SocketService {
           .enableReconnection()
           .build(),
     );
+
+    // Register queued listeners
+    if (_pendingListeners.isNotEmpty) {
+      print('🚀 Registering ${_pendingListeners.length} queued listeners');
+      for (final listener in _pendingListeners) {
+        _socket!.on(listener['event'], listener['handler']);
+      }
+      _pendingListeners.clear();
+    }
 
     _socket!.onConnect((_) {
       _isConnected = true;
@@ -81,6 +106,25 @@ class SocketService {
     _socket!.on('ride_filled', (data) {
       print('🚗 Ride filled');
       onRideFilled?.call(data);
+    });
+
+    // Listen for message edited
+    _socket!.on('message_edited', (data) {
+      print('📝 Message edited');
+      final message = ChatMessage.fromJson(data);
+      onMessageEdited?.call(message);
+    });
+
+    // Listen for message deleted
+    _socket!.on('message_deleted', (data) {
+      print('🗑️ Message deleted');
+      onMessageDeleted?.call(data['messageId']);
+    });
+
+    // Listen for messages read
+    _socket!.on('messages_read', (data) {
+      print('👀 Messages read');
+      onMessagesRead?.call(data['userId'], DateTime.parse(data['lastRead']));
     });
 
     _socket!.connect();

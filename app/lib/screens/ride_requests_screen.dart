@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../models/ride.dart';
 import '../models/join_request.dart';
 import '../services/ride_service.dart';
@@ -36,88 +37,108 @@ class _RideRequestsScreenState extends State<RideRequestsScreen> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final pendingCount = _requests.where((r) => r.isPending).length;
+    final dateFormat = DateFormat('EEE, MMM d');
+    final timeFormat = DateFormat.jm();
 
     return Scaffold(
       appBar: AppBar(title: const Text('Join Requests')),
       body: Column(
         children: [
-          // Ride info card
-          Container(
+          // Ride info - Simple minimalist card
+          Card(
             margin: const EdgeInsets.all(16),
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: colorScheme.surface,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: colorScheme.outline.withOpacity(0.3)),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.circle,
-                      color: AppTheme.secondaryColor,
-                      size: 12,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        widget.ride.from,
-                        style: theme.textTheme.bodyLarge,
-                      ),
-                    ),
-                  ],
-                ),
-                Container(
-                  margin: const EdgeInsets.only(left: 5),
-                  height: 20,
-                  width: 2,
-                  color: colorScheme.outline.withOpacity(0.3),
-                ),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.location_on,
-                      color: AppTheme.primaryColor,
-                      size: 16,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        widget.ride.to,
-                        style: theme.textTheme.bodyLarge,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    _buildStatusChip(widget.ride.status),
-                    const SizedBox(width: 8),
-                    if (pendingCount > 0)
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Route with dots
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Column(
+                          children: [
+                            Container(
+                              width: 10,
+                              height: 10,
+                              decoration: BoxDecoration(
+                                color: AppTheme.successColor,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            Container(
+                              width: 2,
+                              height: 28,
+                              color: colorScheme.outline.withOpacity(0.3),
+                            ),
+                            Icon(
+                              Icons.location_on,
+                              size: 14,
+                              color: colorScheme.primary,
+                            ),
+                          ],
                         ),
-                        decoration: BoxDecoration(
-                          color: AppTheme.warningColor.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(8),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.ride.from,
+                              style: theme.textTheme.bodyLarge?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 18),
+                            Text(
+                              widget.ride.to,
+                              style: theme.textTheme.bodyLarge?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
                         ),
-                        child: Text(
-                          '$pendingCount pending',
-                          style: const TextStyle(
-                            color: AppTheme.warningColor,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
+                      ),
+                      _buildStatusChip(widget.ride.status, colorScheme),
+                    ],
+                  ),
+
+                  const SizedBox(height: 14),
+
+                  // Date, time, pending count
+                  Row(
+                    children: [
+                      Text(
+                        '${dateFormat.format(widget.ride.timeStart)} • ${timeFormat.format(widget.ride.timeStart)}',
+                        style: theme.textTheme.bodySmall,
+                      ),
+                      const Spacer(),
+                      if (pendingCount > 0)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppTheme.warningColor.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            '$pendingCount pending',
+                            style: TextStyle(
+                              color: AppTheme.warningColor,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
-                      ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
 
@@ -134,7 +155,7 @@ class _RideRequestsScreenState extends State<RideRequestsScreen> {
                         children: [
                           Icon(
                             Icons.inbox_outlined,
-                            size: 64,
+                            size: 56,
                             color: colorScheme.outline,
                           ),
                           const SizedBox(height: 16),
@@ -142,10 +163,10 @@ class _RideRequestsScreenState extends State<RideRequestsScreen> {
                             'No requests yet',
                             style: theme.textTheme.titleMedium,
                           ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 4),
                           Text(
                             'Wait for people to request to join',
-                            style: theme.textTheme.bodyMedium,
+                            style: theme.textTheme.bodySmall,
                           ),
                         ],
                       ),
@@ -157,10 +178,11 @@ class _RideRequestsScreenState extends State<RideRequestsScreen> {
                     child: ListView.builder(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       itemCount: _requests.length,
-                      itemBuilder: (context, index) {
-                        final request = _requests[index];
-                        return _buildRequestItem(request, theme, colorScheme);
-                      },
+                      itemBuilder: (context, index) => _buildRequestItem(
+                        _requests[index],
+                        theme,
+                        colorScheme,
+                      ),
                     ),
                   ),
           ),
@@ -169,40 +191,40 @@ class _RideRequestsScreenState extends State<RideRequestsScreen> {
     );
   }
 
-  Widget _buildStatusChip(String status) {
+  Widget _buildStatusChip(String status, ColorScheme colorScheme) {
     Color color;
     String label;
 
     switch (status) {
       case 'open':
-        color = AppTheme.secondaryColor;
+        color = AppTheme.successColor;
         label = 'Open';
         break;
       case 'filled':
-        color = AppTheme.primaryColor;
+        color = colorScheme.primary;
         label = 'Filled';
         break;
       case 'cancelled':
         color = AppTheme.errorColor;
-        label = 'Cancelled';
+        label = 'Closed';
         break;
       default:
-        color = const Color(0xFF6B7280);
+        color = colorScheme.outline;
         label = status;
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
         color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
         label,
         style: TextStyle(
           color: color,
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );
@@ -214,7 +236,7 @@ class _RideRequestsScreenState extends State<RideRequestsScreen> {
     ColorScheme colorScheme,
   ) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 10),
       child: InkWell(
         onTap: () {
           Navigator.push(
@@ -225,36 +247,39 @@ class _RideRequestsScreenState extends State<RideRequestsScreen> {
             ),
           ).then((_) => _loadRequests());
         },
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(20),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(14),
           child: Row(
             children: [
               CircleAvatar(
-                backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
+                radius: 20,
+                backgroundColor: colorScheme.primary.withOpacity(0.1),
                 child: Text(
                   (request.requester?.name ?? 'U')[0].toUpperCase(),
-                  style: const TextStyle(
-                    color: AppTheme.primaryColor,
+                  style: TextStyle(
+                    color: colorScheme.primary,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      request.requester?.name ?? 'Unknown User',
-                      style: theme.textTheme.titleMedium,
+                      request.requester?.name ?? 'Unknown',
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                    const SizedBox(height: 4),
-                    _buildRequestStatusChip(request.status),
+                    const SizedBox(height: 2),
+                    _buildRequestStatus(request.status, colorScheme),
                   ],
                 ),
               ),
-              Icon(Icons.chevron_right, color: colorScheme.outline),
+              Icon(Icons.chevron_right, size: 20, color: colorScheme.outline),
             ],
           ),
         ),
@@ -262,40 +287,27 @@ class _RideRequestsScreenState extends State<RideRequestsScreen> {
     );
   }
 
-  Widget _buildRequestStatusChip(String status) {
+  Widget _buildRequestStatus(String status, ColorScheme colorScheme) {
     Color color;
     String label;
-    IconData icon;
 
     switch (status) {
       case 'pending':
         color = AppTheme.warningColor;
         label = 'Pending';
-        icon = Icons.schedule;
         break;
       case 'accepted':
-        color = AppTheme.secondaryColor;
+        color = AppTheme.successColor;
         label = 'Accepted';
-        icon = Icons.check_circle;
-        break;
-      case 'rejected':
-        color = const Color(0xFF6B7280);
-        label = 'Closed';
-        icon = Icons.close;
         break;
       default:
-        color = const Color(0xFF6B7280);
-        label = status;
-        icon = Icons.help;
+        color = colorScheme.outline;
+        label = 'Closed';
     }
 
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, size: 14, color: color),
-        const SizedBox(width: 4),
-        Text(label, style: TextStyle(color: color, fontSize: 12)),
-      ],
+    return Text(
+      label,
+      style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.w500),
     );
   }
 }

@@ -37,6 +37,10 @@ router.post('/', validate('createRide'), async (req, res) => {
         // Populate owner details
         await ride.populate('owner');
 
+        // 🔌 Emit new ride event
+        const { socketEvents } = require('../services/websocketClient');
+        socketEvents.newRide(ride);
+
         res.status(201).json({
             success: true,
             message: 'Ride created successfully',
@@ -171,6 +175,10 @@ router.delete('/:id', async (req, res) => {
 
         ride.status = 'cancelled';
         await ride.save();
+
+        // 🔌 Emit ride cancelled event
+        const { socketEvents } = require('../services/websocketClient');
+        socketEvents.rideCancelled(ride._id);
 
         res.json({
             success: true,

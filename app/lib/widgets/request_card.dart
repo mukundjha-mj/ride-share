@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/join_request.dart';
-import '../config/theme.dart';
 
 class RequestCard extends StatelessWidget {
   final JoinRequest request;
@@ -29,7 +28,7 @@ class RequestCard extends StatelessWidget {
               // Status and date
               Row(
                 children: [
-                  _buildStatusChip(request.status),
+                  _buildStatusChip(request.status, colorScheme),
                   const Spacer(),
                   Text(
                     dateFormat.format(request.createdAt),
@@ -49,7 +48,7 @@ class RequestCard extends StatelessWidget {
                       children: [
                         Icon(
                           Icons.circle,
-                          color: AppTheme.secondaryColor,
+                          color: colorScheme.outline,
                           size: 10,
                         ),
                         Container(
@@ -59,7 +58,7 @@ class RequestCard extends StatelessWidget {
                         ),
                         Icon(
                           Icons.location_on,
-                          color: AppTheme.primaryColor,
+                          color: colorScheme.primary,
                           size: 14,
                         ),
                       ],
@@ -121,29 +120,29 @@ class RequestCard extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusChip(String status) {
+  Widget _buildStatusChip(String status, ColorScheme colorScheme) {
     Color color;
     String label;
     IconData icon;
 
     switch (status) {
       case 'pending':
-        color = AppTheme.warningColor;
+        color = const Color(0xFFF59E0B); // Amber
         label = 'Pending';
         icon = Icons.schedule;
         break;
       case 'accepted':
-        color = AppTheme.secondaryColor;
+        color = const Color(0xFF22C55E); // Green
         label = 'Confirmed';
         icon = Icons.check_circle;
         break;
       case 'rejected':
-        color = const Color(0xFF6B7280);
+        color = colorScheme.outline;
         label = 'Closed';
         icon = Icons.remove_circle_outline;
         break;
       default:
-        color = const Color(0xFF6B7280);
+        color = colorScheme.outline;
         label = status;
         icon = Icons.help_outline;
     }

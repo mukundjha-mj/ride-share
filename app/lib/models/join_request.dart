@@ -9,6 +9,9 @@ class JoinRequest {
   final DateTime createdAt;
   final User? requester;
   final Ride? ride;
+  final int unreadCount;
+  final DateTime? lastReadOwner;
+  final DateTime? lastReadRequester;
 
   JoinRequest({
     required this.id,
@@ -18,6 +21,9 @@ class JoinRequest {
     required this.createdAt,
     this.requester,
     this.ride,
+    this.unreadCount = 0,
+    this.lastReadOwner,
+    this.lastReadRequester,
   });
 
   factory JoinRequest.fromJson(Map<String, dynamic> json) {
@@ -33,10 +39,38 @@ class JoinRequest {
           ? User.fromJson(json['requester'])
           : null,
       ride: json['rideId'] is Map ? Ride.fromJson(json['rideId']) : null,
+      unreadCount: json['unreadCount'] ?? 0,
+      lastReadOwner: json['lastReadOwner'] != null
+          ? DateTime.parse(json['lastReadOwner'])
+          : null,
+      lastReadRequester: json['lastReadRequester'] != null
+          ? DateTime.parse(json['lastReadRequester'])
+          : null,
     );
   }
 
   bool get isPending => status == 'pending';
   bool get isAccepted => status == 'accepted';
   bool get isRejected => status == 'rejected';
+  bool get hasUnread => unreadCount > 0;
+
+  JoinRequest copyWith({
+    String? status,
+    DateTime? lastReadOwner,
+    DateTime? lastReadRequester,
+    int? unreadCount,
+  }) {
+    return JoinRequest(
+      id: id,
+      rideId: rideId,
+      requesterId: requesterId,
+      status: status ?? this.status,
+      createdAt: createdAt,
+      requester: requester,
+      ride: ride,
+      unreadCount: unreadCount ?? this.unreadCount,
+      lastReadOwner: lastReadOwner ?? this.lastReadOwner,
+      lastReadRequester: lastReadRequester ?? this.lastReadRequester,
+    );
+  }
 }

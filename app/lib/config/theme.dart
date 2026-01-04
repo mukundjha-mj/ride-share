@@ -3,47 +3,54 @@ import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   // ═══════════════════════════════════════════════════════════════
-  // CALM UTILITY PALETTE
-  // Quiet. Trustworthy. Focused. Fast.
+  // TWITTER-STYLE THEME
+  // Clean. Modern. Professional.
   // ═══════════════════════════════════════════════════════════════
 
-  // Primary - Deep Teal (Action, CTAs)
-  static const Color primaryColor = Color(0xFF0F766E);
+  // Primary - Twitter Blue
+  static const Color primaryColor = Color(0xFF1E9DF1);
 
-  // Secondary - Soft Emerald (Success, confirmations)
-  static const Color secondaryColor = Color(0xFF10B981);
+  // Secondary - Green (Success)
+  static const Color secondaryColor = Color(0xFF00B87A);
 
-  // Warning - Muted Amber
-  static const Color warningColor = Color(0xFFF59E0B);
+  // Destructive - Red
+  static const Color errorColor = Color(0xFFF4212E);
 
-  // Error - Muted Red (very limited use)
-  static const Color errorColor = Color(0xFFDC2626);
+  // Success - Green
+  static const Color successColor = Color(0xFF00B87A);
 
-  // ═══════════════════════════════════════════════════════════════
-  // LIGHT MODE (Primary)
-  // ═══════════════════════════════════════════════════════════════
-
-  // Light backgrounds
-  static const Color lightBackground = Color(0xFFF9FAFB); // Warm off-white
-  static const Color lightSurface = Color(0xFFFFFFFF); // Cool white cards
-  static const Color lightBorder = Color(0xFFE5E7EB); // Soft gray
-
-  // Light text
-  static const Color lightTextPrimary = Color(0xFF111827); // Charcoal slate
-  static const Color lightTextSecondary = Color(0xFF6B7280); // Muted gray
+  // Warning - Yellow
+  static const Color warningColor = Color(0xFFF7B928);
 
   // ═══════════════════════════════════════════════════════════════
-  // DARK MODE (Secondary)
+  // LIGHT MODE
   // ═══════════════════════════════════════════════════════════════
 
-  // Dark backgrounds
-  static const Color darkBackground = Color(0xFF0B1220);
-  static const Color darkSurface = Color(0xFF111827);
-  static const Color darkBorder = Color(0xFF374151);
+  static const Color lightBackground = Color(0xFFFFFFFF);
+  static const Color lightForeground = Color(0xFF0F1419);
+  static const Color lightCard = Color(0xFFF7F8F8);
+  static const Color lightCardForeground = Color(0xFF0F1419);
+  static const Color lightMuted = Color(0xFFE5E5E6);
+  static const Color lightMutedForeground = Color(0xFF0F1419);
+  static const Color lightAccent = Color(0xFFE3ECF6);
+  static const Color lightAccentForeground = Color(0xFF1E9DF1);
+  static const Color lightBorder = Color(0xFFE1EAEF);
+  static const Color lightInput = Color(0xFFF7F9FA);
 
-  // Dark text
-  static const Color darkTextPrimary = Color(0xFFE5E7EB);
-  static const Color darkTextSecondary = Color(0xFF9CA3AF);
+  // ═══════════════════════════════════════════════════════════════
+  // DARK MODE
+  // ═══════════════════════════════════════════════════════════════
+
+  static const Color darkBackground = Color(0xFF000000);
+  static const Color darkForeground = Color(0xFFE7E9EA);
+  static const Color darkCard = Color(0xFF17181C);
+  static const Color darkCardForeground = Color(0xFFD9D9D9);
+  static const Color darkMuted = Color(0xFF181818);
+  static const Color darkMutedForeground = Color(0xFF72767A);
+  static const Color darkAccent = Color(0xFF061622);
+  static const Color darkAccentForeground = Color(0xFF1C9CF0);
+  static const Color darkBorder = Color(0xFF242628);
+  static const Color darkInput = Color(0xFF22303C);
 
   // ═══════════════════════════════════════════════════════════════
   // CHAT COLORS
@@ -51,9 +58,8 @@ class AppTheme {
 
   static const Color chatOutgoing = primaryColor;
   static const Color chatOutgoingText = Colors.white;
-  static const Color chatIncomingLight = Color(0xFFFFFFFF);
-  static const Color chatIncomingDark = Color(0xFF1F2937);
-  static const Color chatSystemText = Color(0xFF6B7280);
+  static const Color chatIncomingLight = lightCard;
+  static const Color chatIncomingDark = darkCard;
 
   // ═══════════════════════════════════════════════════════════════
   // LIGHT THEME
@@ -67,19 +73,20 @@ class AppTheme {
       scaffoldBackgroundColor: lightBackground,
       colorScheme: const ColorScheme.light(
         primary: primaryColor,
-        secondary: secondaryColor,
-        surface: lightSurface,
+        secondary: lightForeground,
+        surface: lightCard,
         error: errorColor,
         onPrimary: Colors.white,
         onSecondary: Colors.white,
-        onSurface: lightTextPrimary,
+        onSurface: lightForeground,
+        outline: lightBorder,
       ),
-      textTheme: _buildTextTheme(lightTextPrimary, lightTextSecondary),
+      textTheme: _buildTextTheme(lightForeground, lightMutedForeground),
       cardTheme: CardThemeData(
-        color: lightSurface,
+        color: lightCard,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(20),
           side: const BorderSide(color: lightBorder, width: 1),
         ),
       ),
@@ -87,44 +94,44 @@ class AppTheme {
       outlinedButtonTheme: _outlinedButtonTheme(),
       textButtonTheme: _textButtonTheme(),
       inputDecorationTheme: _inputDecorationTheme(
-        fillColor: lightSurface,
+        fillColor: lightInput,
         borderColor: lightBorder,
-        hintColor: lightTextSecondary,
+        hintColor: lightMutedForeground,
       ),
       appBarTheme: AppBarTheme(
         backgroundColor: lightBackground,
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: true,
-        titleTextStyle: GoogleFonts.inter(
+        titleTextStyle: GoogleFonts.openSans(
           fontSize: 18,
           fontWeight: FontWeight.w600,
-          color: lightTextPrimary,
+          color: lightForeground,
         ),
-        iconTheme: const IconThemeData(color: lightTextPrimary),
+        iconTheme: const IconThemeData(color: lightForeground),
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        backgroundColor: lightSurface,
+        backgroundColor: lightBackground,
         selectedItemColor: primaryColor,
-        unselectedItemColor: lightTextSecondary,
+        unselectedItemColor: lightMutedForeground,
         type: BottomNavigationBarType.fixed,
         elevation: 0,
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: primaryColor,
         foregroundColor: Colors.white,
-        elevation: 2,
+        elevation: 0,
       ),
       dividerTheme: const DividerThemeData(color: lightBorder, thickness: 1),
       chipTheme: ChipThemeData(
-        backgroundColor: lightBackground,
-        labelStyle: GoogleFonts.inter(
+        backgroundColor: lightAccent,
+        labelStyle: GoogleFonts.openSans(
           fontSize: 12,
           fontWeight: FontWeight.w500,
-          color: lightTextPrimary,
+          color: lightAccentForeground,
         ),
-        side: const BorderSide(color: lightBorder),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        side: BorderSide.none,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
     );
   }
@@ -141,64 +148,65 @@ class AppTheme {
       scaffoldBackgroundColor: darkBackground,
       colorScheme: const ColorScheme.dark(
         primary: primaryColor,
-        secondary: secondaryColor,
-        surface: darkSurface,
+        secondary: darkForeground,
+        surface: darkCard,
         error: errorColor,
         onPrimary: Colors.white,
-        onSecondary: Colors.white,
-        onSurface: darkTextPrimary,
+        onSecondary: darkBackground,
+        onSurface: darkForeground,
+        outline: darkBorder,
       ),
-      textTheme: _buildTextTheme(darkTextPrimary, darkTextSecondary),
+      textTheme: _buildTextTheme(darkForeground, darkMutedForeground),
       cardTheme: CardThemeData(
-        color: darkSurface,
+        color: darkCard,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(20),
           side: const BorderSide(color: darkBorder, width: 1),
         ),
       ),
       elevatedButtonTheme: _elevatedButtonTheme(),
-      outlinedButtonTheme: _outlinedButtonTheme(),
+      outlinedButtonTheme: _darkOutlinedButtonTheme(),
       textButtonTheme: _textButtonTheme(),
       inputDecorationTheme: _inputDecorationTheme(
-        fillColor: darkSurface,
+        fillColor: darkInput,
         borderColor: darkBorder,
-        hintColor: darkTextSecondary,
+        hintColor: darkMutedForeground,
       ),
       appBarTheme: AppBarTheme(
         backgroundColor: darkBackground,
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: true,
-        titleTextStyle: GoogleFonts.inter(
+        titleTextStyle: GoogleFonts.openSans(
           fontSize: 18,
           fontWeight: FontWeight.w600,
-          color: darkTextPrimary,
+          color: darkForeground,
         ),
-        iconTheme: const IconThemeData(color: darkTextPrimary),
+        iconTheme: const IconThemeData(color: darkForeground),
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        backgroundColor: darkSurface,
+        backgroundColor: darkCard,
         selectedItemColor: primaryColor,
-        unselectedItemColor: darkTextSecondary,
+        unselectedItemColor: darkMutedForeground,
         type: BottomNavigationBarType.fixed,
         elevation: 0,
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: primaryColor,
         foregroundColor: Colors.white,
-        elevation: 2,
+        elevation: 0,
       ),
       dividerTheme: const DividerThemeData(color: darkBorder, thickness: 1),
       chipTheme: ChipThemeData(
-        backgroundColor: darkSurface,
-        labelStyle: GoogleFonts.inter(
+        backgroundColor: darkAccent,
+        labelStyle: GoogleFonts.openSans(
           fontSize: 12,
           fontWeight: FontWeight.w500,
-          color: darkTextPrimary,
+          color: darkAccentForeground,
         ),
-        side: const BorderSide(color: darkBorder),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        side: BorderSide.none,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
     );
   }
@@ -208,49 +216,49 @@ class AppTheme {
   // ═══════════════════════════════════════════════════════════════
 
   static TextTheme _buildTextTheme(Color primary, Color secondary) {
-    return GoogleFonts.interTextTheme().copyWith(
-      headlineLarge: GoogleFonts.inter(
+    return GoogleFonts.openSansTextTheme().copyWith(
+      headlineLarge: GoogleFonts.openSans(
         fontSize: 28,
         fontWeight: FontWeight.w700,
         color: primary,
         letterSpacing: -0.5,
       ),
-      headlineMedium: GoogleFonts.inter(
+      headlineMedium: GoogleFonts.openSans(
         fontSize: 22,
         fontWeight: FontWeight.w600,
         color: primary,
       ),
-      titleLarge: GoogleFonts.inter(
+      titleLarge: GoogleFonts.openSans(
         fontSize: 18,
         fontWeight: FontWeight.w600,
         color: primary,
       ),
-      titleMedium: GoogleFonts.inter(
+      titleMedium: GoogleFonts.openSans(
         fontSize: 16,
         fontWeight: FontWeight.w500,
         color: primary,
       ),
-      bodyLarge: GoogleFonts.inter(
+      bodyLarge: GoogleFonts.openSans(
         fontSize: 16,
         fontWeight: FontWeight.w400,
         color: primary,
       ),
-      bodyMedium: GoogleFonts.inter(
+      bodyMedium: GoogleFonts.openSans(
         fontSize: 14,
         fontWeight: FontWeight.w400,
         color: secondary,
       ),
-      bodySmall: GoogleFonts.inter(
+      bodySmall: GoogleFonts.openSans(
         fontSize: 12,
         fontWeight: FontWeight.w400,
         color: secondary,
       ),
-      labelLarge: GoogleFonts.inter(
+      labelLarge: GoogleFonts.openSans(
         fontSize: 14,
         fontWeight: FontWeight.w600,
         color: primary,
       ),
-      labelMedium: GoogleFonts.inter(
+      labelMedium: GoogleFonts.openSans(
         fontSize: 12,
         fontWeight: FontWeight.w500,
         color: secondary,
@@ -265,8 +273,11 @@ class AppTheme {
         foregroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
         elevation: 0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        textStyle: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w600),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        textStyle: GoogleFonts.openSans(
+          fontSize: 15,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }
@@ -277,8 +288,26 @@ class AppTheme {
         foregroundColor: primaryColor,
         side: const BorderSide(color: primaryColor, width: 1.5),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        textStyle: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w600),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        textStyle: GoogleFonts.openSans(
+          fontSize: 15,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+
+  static OutlinedButtonThemeData _darkOutlinedButtonTheme() {
+    return OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        foregroundColor: primaryColor,
+        side: const BorderSide(color: primaryColor, width: 1.5),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        textStyle: GoogleFonts.openSans(
+          fontSize: 15,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }
@@ -287,7 +316,10 @@ class AppTheme {
     return TextButtonThemeData(
       style: TextButton.styleFrom(
         foregroundColor: primaryColor,
-        textStyle: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600),
+        textStyle: GoogleFonts.openSans(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }
@@ -301,23 +333,23 @@ class AppTheme {
       filled: true,
       fillColor: fillColor,
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(20),
         borderSide: BorderSide(color: borderColor),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(20),
         borderSide: BorderSide(color: borderColor),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(20),
         borderSide: const BorderSide(color: primaryColor, width: 2),
       ),
       errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(20),
         borderSide: const BorderSide(color: errorColor),
       ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      hintStyle: GoogleFonts.inter(color: hintColor, fontSize: 14),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      hintStyle: GoogleFonts.openSans(color: hintColor, fontSize: 14),
     );
   }
 }

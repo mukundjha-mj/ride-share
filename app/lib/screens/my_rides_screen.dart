@@ -15,7 +15,7 @@ class MyRidesScreen extends StatelessWidget {
 
     return Consumer<RideProvider>(
       builder: (context, provider, child) {
-        if (provider.isLoading && provider.myRides.isEmpty) {
+        if (provider.isMyRidesLoading && provider.myRides.isEmpty) {
           return const Center(child: CircularProgressIndicator());
         }
 
@@ -59,6 +59,8 @@ class MyRidesScreen extends StatelessWidget {
               return RideCard(
                 ride: ride,
                 showJoinButton: false,
+                showDeleteButton: true,
+                onDelete: () => _handleDelete(context, ride),
                 onTap: () {
                   Navigator.push(
                     context,
@@ -73,5 +75,50 @@ class MyRidesScreen extends StatelessWidget {
         );
       },
     );
+  }
+
+  Future<void> _handleDelete(BuildContext context, dynamic ride) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Ride?'),
+        content: const Text(
+          'This will cancel the ride and notify all participants. This action cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(foregroundColor: AppTheme.errorColor),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && context.mounted) {
+      final success = await context.read<RideProvider>().cancelRide(ride.id);
+
+      if (context.mounted) {
+        if (success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Ride deleted successfully'),
+              backgroundColor: AppTheme.successColor,
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Failed to delete ride'),
+              backgroundColor: AppTheme.errorColor,
+            ),
+          );
+        }
+      }
+    }
   }
 }

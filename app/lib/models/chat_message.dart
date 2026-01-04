@@ -5,6 +5,7 @@ class ChatMessage {
   final String message;
   final bool isSystemMessage;
   final DateTime createdAt;
+  final bool isEdited;
 
   ChatMessage({
     required this.id,
@@ -13,6 +14,7 @@ class ChatMessage {
     required this.message,
     required this.isSystemMessage,
     required this.createdAt,
+    this.isEdited = false,
   });
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) {
@@ -23,6 +25,7 @@ class ChatMessage {
       message: json['message'],
       isSystemMessage: json['isSystemMessage'] ?? false,
       createdAt: DateTime.parse(json['createdAt']),
+      isEdited: json['isEdited'] ?? false,
     );
   }
 }

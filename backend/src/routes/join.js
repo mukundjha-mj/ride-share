@@ -5,7 +5,7 @@ const JoinRequest = require('../models/JoinRequest');
 const ChatMessage = require('../models/ChatMessage');
 const auth = require('../middleware/auth');
 const { joinLimiter } = require('../middleware/rateLimiter');
-const { socketEvents } = require('../socket');
+const { socketEvents } = require('../services/websocketClient');
 
 const router = express.Router();
 
@@ -46,7 +46,7 @@ router.post('/rides/:rideId/join', joinLimiter, async (req, res) => {
         await joinRequest.populate('requester');
 
         // 🔌 Notify ride owner of new request
-        socketEvents.newJoinRequest(rideId, joinRequest);
+        socketEvents.newJoinRequest(ride.ownerId.toString(), rideId, joinRequest);
 
         res.status(201).json({
             success: true,
@@ -74,7 +74,24 @@ router.get('/rides/:rideId/requests', async (req, res) => {
         }
 
         const requests = await JoinRequest.find({ rideId }).populate('requester').sort({ createdAt: -1 });
-        res.json({ success: true, data: { requests } });
+
+        // Calculate unread count for each request (for owner)
+        const ChatMessage = require('../models/ChatMessage');
+        const requestsWithUnread = await Promise.all(requests.map(async (request) => {
+            const chatUnread = await ChatMessage.countDocuments({
+                joinRequestId: request._id,
+                createdAt: { $gt: request.lastReadOwner || new Date(0) },
+                senderId: { $ne: req.userId } // Messages not sent by owner
+            });
+
+            // Also count the request itself if it's new/unseen
+            const isNewRequest = request.createdAt > (request.lastReadOwner || new Date(0));
+            const totalUnread = chatUnread + (isNewRequest ? 1 : 0);
+
+            return { ...request.toObject(), unreadCount: totalUnread };
+        }));
+
+        res.json({ success: true, data: { requests: requestsWithUnread } });
     } catch (error) {
         console.error('Get requests error:', error);
         res.status(500).json({ success: false, message: 'Server error fetching requests' });
@@ -186,7 +203,19 @@ router.get('/join/my', async (req, res) => {
         const requests = await JoinRequest.find({ requesterId: req.userId })
             .populate({ path: 'rideId', populate: { path: 'owner' } })
             .sort({ createdAt: -1 });
-        res.json({ success: true, data: { requests } });
+
+        // Calculate unread count for each request (for requester)
+        const ChatMessage = require('../models/ChatMessage');
+        const requestsWithUnread = await Promise.all(requests.map(async (request) => {
+            const unreadCount = await ChatMessage.countDocuments({
+                joinRequestId: request._id,
+                createdAt: { $gt: request.lastReadRequester || new Date(0) },
+                senderId: { $ne: req.userId } // Messages not sent by me
+            });
+            return { ...request.toObject(), unreadCount };
+        }));
+
+        res.json({ success: true, data: { requests: requestsWithUnread } });
     } catch (error) {
         console.error('Get my requests error:', error);
         res.status(500).json({ success: false, message: 'Server error fetching your requests' });

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/ride_provider.dart';
+import '../providers/auth_provider.dart';
+import '../providers/theme_provider.dart';
+import '../providers/unread_provider.dart';
 import '../config/theme.dart';
 import '../widgets/ride_card.dart';
 import 'create_ride_screen.dart';
@@ -23,16 +26,39 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<RideProvider>().refreshAll();
+      final rideProvider = context.read<RideProvider>();
+      final authProvider = context.read<AuthProvider>();
+
+      rideProvider.refreshAll();
+      rideProvider.startRealTimeUpdates(currentUserId: authProvider.user?.id);
+
+      // Start polling for unread messages
+      context.read<UnreadProvider>().startPolling();
     });
   }
 
   @override
+  void dispose() {
+    // Note: Provider handles its own disposal
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final themeProvider = context.watch<ThemeProvider>();
+    final unreadProvider = context.watch<UnreadProvider>();
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(
+            themeProvider.themeMode == ThemeMode.dark
+                ? Icons.light_mode
+                : Icons.dark_mode,
+          ),
+          onPressed: () => themeProvider.toggleTheme(),
+          tooltip: 'Toggle theme',
+        ),
         title: Text(_getTitle()),
         actions: [
           IconButton(
@@ -71,30 +97,69 @@ class _HomeScreenState extends State<HomeScreen> {
           : null,
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
-        onTap: (index) => setState(() => _currentIndex = index),
-        items: const [
-          BottomNavigationBarItem(
+        onTap: (index) {
+          setState(() => _currentIndex = index);
+          // Refresh unread when switching to chats
+          if (index == 2) {
+            unreadProvider.fetchUnreadCount();
+          }
+        },
+        items: [
+          const BottomNavigationBarItem(
             icon: Icon(Icons.explore_outlined),
             activeIcon: Icon(Icons.explore),
             label: 'Browse',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.directions_car_outlined),
             activeIcon: Icon(Icons.directions_car),
             label: 'My Rides',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.chat_bubble_outline),
-            activeIcon: Icon(Icons.chat_bubble),
+            icon: _buildChatIcon(unreadProvider, false),
+            activeIcon: _buildChatIcon(unreadProvider, true),
             label: 'Chats',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.send_outlined),
             activeIcon: Icon(Icons.send),
             label: 'Requests',
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildChatIcon(UnreadProvider unreadProvider, bool isActive) {
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Icon(isActive ? Icons.chat_bubble : Icons.chat_bubble_outline),
+        if (unreadProvider.hasUnread)
+          Positioned(
+            right: -6,
+            top: -4,
+            child: Container(
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: AppTheme.errorColor,
+                shape: BoxShape.circle,
+              ),
+              constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+              child: Text(
+                unreadProvider.totalUnreadCount > 9
+                    ? '9+'
+                    : '${unreadProvider.totalUnreadCount}',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+      ],
     );
   }
 
@@ -124,7 +189,8 @@ class _RideFeed extends StatelessWidget {
 
     return Consumer<RideProvider>(
       builder: (context, provider, child) {
-        if (provider.isLoading && provider.rides.isEmpty) {
+        // Use specific feed loading state to avoid flicker from background updates
+        if (provider.isFeedLoading && provider.rides.isEmpty) {
           return const Center(child: CircularProgressIndicator());
         }
 
@@ -147,12 +213,6 @@ class _RideFeed extends StatelessWidget {
                     'Check back later or post your own ride',
                     style: theme.textTheme.bodyMedium,
                     textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 24),
-                  OutlinedButton.icon(
-                    onPressed: () => provider.loadRides(),
-                    icon: const Icon(Icons.refresh),
-                    label: const Text('Refresh'),
                   ),
                 ],
               ),

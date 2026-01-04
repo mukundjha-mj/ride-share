@@ -91,6 +91,25 @@ class ApiService {
     }
   }
 
+  // Generic PUT request
+  Future<ApiResponse> put(
+    String endpoint,
+    Map<String, dynamic> body, {
+    bool withAuth = true,
+  }) async {
+    try {
+      final headers = await _getHeaders(withAuth: withAuth);
+      final response = await http.put(
+        Uri.parse('${ApiConfig.baseUrl}$endpoint'),
+        headers: headers,
+        body: jsonEncode(body),
+      );
+      return _handleResponse(response);
+    } catch (e) {
+      return ApiResponse(success: false, message: 'Network error: $e');
+    }
+  }
+
   // Generic PATCH request
   Future<Map<String, dynamic>?> patch(
     String endpoint,

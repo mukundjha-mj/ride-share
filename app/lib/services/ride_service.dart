@@ -53,8 +53,8 @@ class RideService {
     final response = await _api.post(ApiConfig.rides, {
       'from': from,
       'to': to,
-      'timeStart': timeStart.toIso8601String(),
-      'timeEnd': timeEnd.toIso8601String(),
+      'timeStart': timeStart.toUtc().toIso8601String(),
+      'timeEnd': timeEnd.toUtc().toIso8601String(),
       'seats': seats,
     });
     if (response.success && response.data != null) {
@@ -128,6 +128,36 @@ class RideService {
       return ChatMessage.fromJson(response.data['chatMessage']);
     }
     return null;
+  }
+
+  // Edit a message
+  Future<ChatMessage?> editMessage(
+    String joinId,
+    String messageId,
+    String message,
+  ) async {
+    final response = await _api.put(
+      '${ApiConfig.chatMessages(joinId)}/$messageId',
+      {'message': message},
+    );
+    if (response.success && response.data != null) {
+      return ChatMessage.fromJson(response.data['chatMessage']);
+    }
+    return null;
+  }
+
+  // Delete a message
+  Future<bool> deleteMessage(String joinId, String messageId) async {
+    final response = await _api.delete(
+      '${ApiConfig.chatMessages(joinId)}/$messageId',
+    );
+    return response.success;
+  }
+
+  // Mark messages as read
+  Future<void> markAsRead(String joinId) async {
+    // Construct /join/:joinId/read
+    await _api.post('/join/$joinId/read', {});
   }
 }
 

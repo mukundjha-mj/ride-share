@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/ride_provider.dart';
 import '../config/theme.dart';
 import '../services/ride_service.dart';
+import '../services/socket_service.dart';
 import 'chat_screen.dart';
 
 class ChatsScreen extends StatefulWidget {
@@ -16,15 +18,43 @@ class _ChatsScreenState extends State<ChatsScreen> {
   final RideService _rideService = RideService();
   List<ChatItem> _chats = [];
   bool _isLoading = true;
+  final SocketService _socketService = SocketService();
 
   @override
   void initState() {
     super.initState();
     _loadChats();
+    _setupSocketListeners();
   }
 
-  Future<void> _loadChats() async {
-    setState(() => _isLoading = true);
+  void _setupSocketListeners() {
+    // Listen for events that should refresh the chat list
+    _socketService.on('new_message', (_) => _loadChats(showLoading: false));
+    _socketService.on(
+      'new_join_request',
+      (_) => _loadChats(showLoading: false),
+    );
+    _socketService.on(
+      'request_accepted',
+      (_) => _loadChats(showLoading: false),
+    );
+    _socketService.on(
+      'request_rejected',
+      (_) => _loadChats(showLoading: false),
+    );
+    _socketService.on('ride_filled', (_) => _loadChats(showLoading: false));
+  }
+
+  @override
+  void dispose() {
+    // Note: We don't remove socket listeners here as they might be shared,
+    // but typically we should if proper cleanup is needed.
+    // For now, simple re-fetch is fine.
+    super.dispose();
+  }
+
+  Future<void> _loadChats({bool showLoading = true}) async {
+    if (showLoading) setState(() => _isLoading = true);
 
     final chats = <ChatItem>[];
 
@@ -39,6 +69,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
           status: request.status,
           isOwner: false,
           createdAt: request.createdAt,
+          unreadCount: request.unreadCount,
         ),
       );
     }
@@ -58,6 +89,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
             status: request.status,
             isOwner: true,
             createdAt: request.createdAt,
+            unreadCount: request.unreadCount,
           ),
         );
       }
@@ -99,12 +131,6 @@ class _ChatsScreenState extends State<ChatsScreen> {
                 'Join a ride or wait for requests',
                 style: theme.textTheme.bodyMedium,
                 textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 24),
-              OutlinedButton.icon(
-                onPressed: _loadChats,
-                icon: const Icon(Icons.refresh),
-                label: const Text('Refresh'),
               ),
             ],
           ),
@@ -150,21 +176,54 @@ class _ChatsScreenState extends State<ChatsScreen> {
           padding: const EdgeInsets.all(16),
           child: Row(
             children: [
-              CircleAvatar(
-                backgroundColor:
-                    (chat.isOwner
+              // Avatar with unread indicator
+              Stack(
+                children: [
+                  CircleAvatar(
+                    backgroundColor:
+                        (chat.isOwner
+                                ? AppTheme.primaryColor
+                                : AppTheme.secondaryColor)
+                            .withOpacity(0.1),
+                    child: Text(
+                      chat.name[0].toUpperCase(),
+                      style: TextStyle(
+                        color: chat.isOwner
                             ? AppTheme.primaryColor
-                            : AppTheme.secondaryColor)
-                        .withOpacity(0.1),
-                child: Text(
-                  chat.name[0].toUpperCase(),
-                  style: TextStyle(
-                    color: chat.isOwner
-                        ? AppTheme.primaryColor
-                        : AppTheme.secondaryColor,
-                    fontWeight: FontWeight.w600,
+                            : AppTheme.secondaryColor,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
-                ),
+                  // Red dot for unread messages
+                  if (chat.hasUnread)
+                    Positioned(
+                      right: 0,
+                      top: 0,
+                      child: Container(
+                        width: 14,
+                        height: 14,
+                        decoration: BoxDecoration(
+                          color: AppTheme.errorColor,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: colorScheme.surface,
+                            width: 2,
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            chat.unreadCount > 9 ? '9+' : '${chat.unreadCount}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 8,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -176,7 +235,11 @@ class _ChatsScreenState extends State<ChatsScreen> {
                         Expanded(
                           child: Text(
                             chat.name,
-                            style: theme.textTheme.titleMedium,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: chat.hasUnread
+                                  ? FontWeight.bold
+                                  : FontWeight.w500,
+                            ),
                           ),
                         ),
                         _buildStatusChip(chat.status),
@@ -252,6 +315,7 @@ class ChatItem {
   final String status;
   final bool isOwner;
   final DateTime createdAt;
+  final int unreadCount;
 
   ChatItem({
     required this.joinRequestId,
@@ -260,5 +324,8 @@ class ChatItem {
     required this.status,
     required this.isOwner,
     required this.createdAt,
+    this.unreadCount = 0,
   });
+
+  bool get hasUnread => unreadCount > 0;
 }

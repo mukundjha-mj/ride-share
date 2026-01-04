@@ -15,6 +15,15 @@ const joinRequestSchema = new mongoose.Schema({
         type: String,
         enum: ['pending', 'accepted', 'rejected'],
         default: 'pending'
+    },
+    // Track when each user last read messages
+    lastReadOwner: {
+        type: Date,
+        default: Date.now
+    },
+    lastReadRequester: {
+        type: Date,
+        default: Date.now
     }
 }, {
     timestamps: true

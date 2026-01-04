@@ -9,13 +9,17 @@ import '../screens/chat_screen.dart';
 class RideCard extends StatelessWidget {
   final Ride ride;
   final bool showJoinButton;
+  final bool showDeleteButton;
   final VoidCallback? onTap;
+  final VoidCallback? onDelete;
 
   const RideCard({
     super.key,
     required this.ride,
     this.showJoinButton = false,
+    this.showDeleteButton = false,
     this.onTap,
+    this.onDelete,
   });
 
   @override
@@ -29,134 +33,161 @@ class RideCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(20),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Owner info
-              if (ride.owner != null)
-                Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 18,
-                      backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
-                      child: Text(
-                        ride.owner!.name[0].toUpperCase(),
-                        style: const TextStyle(
-                          color: AppTheme.primaryColor,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        ride.owner!.name,
-                        style: theme.textTheme.titleMedium,
-                      ),
-                    ),
-                    _buildStatusChip(ride.status),
-                  ],
-                ),
-
-              const SizedBox(height: 16),
-
-              // Route visualization
+              // Route - Simple FROM → TO
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Column(
-                    children: [
-                      Icon(
-                        Icons.circle,
-                        color: AppTheme.secondaryColor,
-                        size: 12,
-                      ),
-                      Container(
-                        width: 2,
-                        height: 28,
-                        color: colorScheme.outline.withOpacity(0.3),
-                      ),
-                      Icon(
-                        Icons.location_on,
-                        color: AppTheme.primaryColor,
-                        size: 16,
-                      ),
-                    ],
+                  // Route dots
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 10,
+                          height: 10,
+                          decoration: BoxDecoration(
+                            color: AppTheme.successColor,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        Container(
+                          width: 2,
+                          height: 32,
+                          color: colorScheme.outline.withOpacity(0.3),
+                        ),
+                        Icon(
+                          Icons.location_on,
+                          size: 14,
+                          color: colorScheme.primary,
+                        ),
+                      ],
+                    ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 14),
+                  // Locations
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(ride.from, style: theme.textTheme.bodyLarge),
-                        const SizedBox(height: 18),
-                        Text(ride.to, style: theme.textTheme.bodyLarge),
+                        Text(
+                          ride.from,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
+                          ride.to,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ],
                     ),
                   ),
+                  // Status chip
+                  _buildStatusChip(ride.status, colorScheme),
                 ],
               ),
 
               const SizedBox(height: 16),
-              Divider(color: colorScheme.outline.withOpacity(0.2), height: 1),
-              const SizedBox(height: 12),
 
-              // Time and seats info
+              // Bottom info - Date, Time, Seats, Owner
               Row(
                 children: [
-                  Icon(
-                    Icons.schedule,
-                    size: 16,
-                    color: theme.textTheme.bodyMedium?.color,
-                  ),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: Text(
-                      '${dateFormat.format(ride.timeStart)} • ${timeFormat.format(ride.timeStart)} - ${timeFormat.format(ride.timeEnd)}',
-                      style: theme.textTheme.bodySmall,
+                  // Owner avatar
+                  if (ride.owner != null) ...[
+                    CircleAvatar(
+                      radius: 12,
+                      backgroundColor: colorScheme.primary.withOpacity(0.1),
+                      child: Text(
+                        ride.owner!.name[0].toUpperCase(),
+                        style: TextStyle(
+                          color: colorScheme.primary,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 10,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      ride.owner!.name.split(' ')[0],
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                  ],
+
+                  // Divider dot
+                  Container(
+                    width: 3,
+                    height: 3,
+                    decoration: BoxDecoration(
+                      color: colorScheme.outline,
+                      shape: BoxShape.circle,
                     ),
                   ),
+                  const SizedBox(width: 12),
+
+                  // Date & Time
+                  Text(
+                    '${dateFormat.format(ride.timeStart)} • ${timeFormat.format(ride.timeStart)}',
+                    style: theme.textTheme.bodySmall,
+                  ),
+
+                  const Spacer(),
+
+                  // Seats
                   Icon(
                     Icons.person_outline,
-                    size: 16,
-                    color: theme.textTheme.bodyMedium?.color,
+                    size: 14,
+                    color: colorScheme.outline,
                   ),
                   const SizedBox(width: 4),
-                  Text('${ride.seats}', style: theme.textTheme.bodySmall),
+                  Text(
+                    '${ride.seats}',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 ],
               ),
 
-              // Pending count for owner
+              // Pending requests notification
               if (ride.pendingRequestCount != null &&
                   ride.pendingRequestCount! > 0) ...[
                 const SizedBox(height: 12),
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
-                    vertical: 6,
+                    vertical: 8,
                   ),
                   decoration: BoxDecoration(
                     color: AppTheme.warningColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(
-                        Icons.notifications_active_outlined,
+                      Icon(
+                        Icons.notifications_active,
                         size: 14,
                         color: AppTheme.warningColor,
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        '${ride.pendingRequestCount} pending request${ride.pendingRequestCount! > 1 ? 's' : ''}',
-                        style: const TextStyle(
+                        '${ride.pendingRequestCount} pending',
+                        style: TextStyle(
                           color: AppTheme.warningColor,
                           fontSize: 12,
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
@@ -166,12 +197,29 @@ class RideCard extends StatelessWidget {
 
               // Join button
               if (showJoinButton && ride.isOpen) ...[
-                const SizedBox(height: 16),
+                const SizedBox(height: 14),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () => _handleJoin(context),
                     child: const Text('Request to Join'),
+                  ),
+                ),
+              ],
+
+              // Delete button (Owner only)
+              if (showDeleteButton && !ride.isCancelled) ...[
+                const SizedBox(height: 14),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: onDelete,
+                    icon: const Icon(Icons.delete_outline, size: 18),
+                    label: const Text('Delete Ride'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppTheme.errorColor,
+                      side: BorderSide(color: AppTheme.errorColor),
+                    ),
                   ),
                 ),
               ],
@@ -182,25 +230,25 @@ class RideCard extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusChip(String status) {
+  Widget _buildStatusChip(String status, ColorScheme colorScheme) {
     Color color;
     String label;
 
     switch (status) {
       case 'open':
-        color = AppTheme.secondaryColor;
+        color = AppTheme.successColor;
         label = 'Open';
         break;
       case 'filled':
-        color = AppTheme.primaryColor;
+        color = colorScheme.primary;
         label = 'Filled';
         break;
       case 'cancelled':
         color = AppTheme.errorColor;
-        label = 'Cancelled';
+        label = 'Closed';
         break;
       default:
-        color = const Color(0xFF6B7280);
+        color = colorScheme.outline;
         label = status;
     }
 
@@ -208,14 +256,14 @@ class RideCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
         color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
         label,
         style: TextStyle(
           color: color,
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );
@@ -227,10 +275,10 @@ class RideCard extends StatelessWidget {
 
     if (request != null && context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Request sent! Opening chat...'),
-          backgroundColor: AppTheme.secondaryColor,
-          duration: Duration(seconds: 1),
+        SnackBar(
+          content: const Text('Request sent!'),
+          backgroundColor: AppTheme.successColor,
+          duration: const Duration(seconds: 1),
         ),
       );
 
