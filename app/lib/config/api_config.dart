@@ -2,12 +2,13 @@
 class ApiConfig {
   // LOCAL TESTING - Uncomment production URLs before deploying
   // Use 192.168.1.5 for physical device testing (LAN IP)
+  // use 192.168.1.5 for physical device testing (LAN IP)
   static const String baseUrl = 'http://192.168.1.5:5000';
-  static const String websocketUrl = 'http://192.168.1.5:3001';
+  // static const String websocketUrl = 'http://192.168.1.5:3001';
 
   // Production URLs (uncomment before building APK)
   // static const String baseUrl = 'https://ride-share-prod.vercel.app';
-  // static const String websocketUrl = 'https://rideshare-websocket.onrender.com';
+  static const String websocketUrl = 'https://rideshare-websocket.onrender.com';
 
   // Auth endpoints
   static const String register = '/auth/register';

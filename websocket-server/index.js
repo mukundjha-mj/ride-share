@@ -187,8 +187,12 @@ const KEEP_ALIVE_INTERVAL = 10 * 60 * 1000; // 10 minutes
 setInterval(() => {
   const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
   const host = process.env.RENDER_EXTERNAL_HOSTNAME || `localhost:${PORT}`;
+  const url = `${protocol}://${host}/health`;
 
-  http.get(`${protocol}://${host}/health`, (resp) => {
+  // Choose the correct module
+  const client = protocol === 'https' ? require('https') : require('http');
+
+  client.get(url, (resp) => {
     // console.log(`💓 Keep-Alive ping: ${resp.statusCode}`);
   }).on('error', (err) => {
     // console.error('Keep-Alive ping failed:', err.message);
