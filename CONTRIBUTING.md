@@ -5,11 +5,12 @@ Thank you for your interest in contributing! This guide will help you get starte
 ## 🏗️ Project Structure
 
 - **`backend/`** - Node.js + Express + MongoDB API
+- **`websocket-server/`** - Standalone Socket.IO Server for real-time events
 - **`app/`** - Flutter mobile application
 
 ## 🚀 Development Setup
 
-### Backend
+### 1. Backend
 ```bash
 cd backend
 npm install
@@ -18,10 +19,20 @@ cp .env.example .env
 npm run dev
 ```
 
-### Flutter App
+### 2. WebSocket Server
+```bash
+cd websocket-server
+npm install
+cp .env.example .env
+node index.js
+```
+
+### 3. Flutter App
 ```bash
 cd app
 flutter pub get
+cp .env.example .env
+# Edit app/.env with your local backend URLs (e.g. http://192.168.1.5:5000)
 flutter run
 ```
 

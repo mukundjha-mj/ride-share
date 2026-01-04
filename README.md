@@ -14,9 +14,10 @@ No rejections. No awkward silences. Just natural coordination.
 
 ```
 ride-share/
-├── backend/     # Node.js + Express + MongoDB API
-├── app/         # Flutter mobile app (Android/iOS)
-└── docs/        # Documentation (coming soon)
+├── backend/           # Node.js + Express + MongoDB API (Vercel)
+├── websocket-server/  # Separate Real-time Server (Render)
+├── app/               # Flutter mobile app (Android/iOS)
+└── docs/              # Documentation
 ```
 
 ## 🚀 Quick Start
@@ -26,22 +27,37 @@ ride-share/
 - MongoDB (local or Atlas)
 - Flutter 3.10+
 
-### Backend
+### 1. Backend (API)
 ```bash
 cd backend
 npm install
-cp .env.example .env  # Configure your environment
+cp .env.example .env  # Add MongoDB URI & JWT_SECRET
 npm run dev
 ```
 
-### Mobile App
+### 2. WebSocket Server (Real-time)
+```bash
+cd websocket-server
+npm install
+cp .env.example .env  # Add PORT=3001 & Secrets
+node index.js
+```
+
+### 3. Mobile App
 ```bash
 cd app
 flutter pub get
+cp .env.example .env  # Add API & WebSocket URLs
 flutter run
 ```
 
-> Update `app/lib/config/api_config.dart` with your backend URL.
+> **Note:** The app requires the `.env` file to know where the backend is. See `.env.example` for the format.
+
+## ☁️ Deployment
+
+- **Backend:** Deployed on **Vercel** (`https://ride-share-prod.vercel.app`)
+- **WebSocket:** Deployed on **Render** (`https://rideshare-websocket.onrender.com`)
+- **App:** Built as APK/IPA (configure `.env` with production URLs before building)
 
 ## 🔑 Features
 
@@ -56,12 +72,6 @@ flutter run
 ## 🤝 Contributing
 
 We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
-### Areas We Need Help
-- [ ] iOS testing
-- [ ] Localization (Hindi, Tamil, etc.)
-- [ ] Push notifications
-- [ ] Campus-specific features
 
 ## 📄 License
 
