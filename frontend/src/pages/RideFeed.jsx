@@ -85,8 +85,8 @@ export function RideFeed() {
         return (
             <div className="flex items-center justify-center py-20">
                 <div className="flex flex-col items-center gap-4">
-                    <div className="h-12 w-12 rounded-full border-4 border-primary-200 border-t-primary-500 animate-spin" />
-                    <p className="text-slate-500 dark:text-slate-400">Finding rides...</p>
+                    <div className="h-12 w-12 rounded-full border-4 border-primary border-t-transparent animate-spin" />
+                    <p className="text-muted-foreground">Finding rides...</p>
                 </div>
             </div>
         );
@@ -105,10 +105,10 @@ export function RideFeed() {
                                 <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-primary-500 to-secondary-500 flex items-center justify-center mb-6 mx-auto shadow-2xl shadow-primary-500/30">
                                     <Car className="h-10 w-10 text-white" />
                                 </div>
-                                <h2 className="text-2xl md:text-3xl font-bold mb-3 bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
+                                <h2 className="text-2xl md:text-3xl font-bold mb-3 text-foreground">
                                     No rides available right now
                                 </h2>
-                                <p className="text-slate-500 dark:text-slate-400 mb-8 max-w-md mx-auto">
+                                <p className="text-muted-foreground mb-8 max-w-md mx-auto">
                                     Be the first to post a ride and help others travel with you. It's quick and easy!
                                 </p>
                                 <Button size="lg" onClick={() => navigate('/create-ride')} className="gap-2">
@@ -122,11 +122,11 @@ export function RideFeed() {
                     {/* Feature Cards */}
                     <Card>
                         <CardContent className="p-6">
-                            <div className="w-12 h-12 rounded-2xl bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center mb-4">
-                                <Users className="h-6 w-6 text-primary-600 dark:text-primary-400" />
+                            <div className="w-12 h-12 rounded-2xl bg-secondary/20 flex items-center justify-center mb-4">
+                                <Users className="h-6 w-6 text-secondary-foreground" />
                             </div>
                             <h3 className="font-semibold mb-2">Connect with Others</h3>
-                            <p className="text-sm text-slate-500 dark:text-slate-400">
+                            <p className="text-sm text-muted-foreground">
                                 Find travel companions heading the same way
                             </p>
                         </CardContent>
@@ -134,11 +134,11 @@ export function RideFeed() {
 
                     <Card>
                         <CardContent className="p-6">
-                            <div className="w-12 h-12 rounded-2xl bg-secondary-100 dark:bg-secondary-900/30 flex items-center justify-center mb-4">
-                                <MapPin className="h-6 w-6 text-secondary-600 dark:text-secondary-400" />
+                            <div className="w-12 h-12 rounded-2xl bg-secondary/20 flex items-center justify-center mb-4">
+                                <MapPin className="h-6 w-6 text-secondary-foreground" />
                             </div>
                             <h3 className="font-semibold mb-2">Share Your Route</h3>
-                            <p className="text-sm text-slate-500 dark:text-slate-400">
+                            <p className="text-sm text-muted-foreground">
                                 Post your ride and let others join you
                             </p>
                         </CardContent>
@@ -146,11 +146,11 @@ export function RideFeed() {
 
                     <Card>
                         <CardContent className="p-6">
-                            <div className="w-12 h-12 rounded-2xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center mb-4">
-                                <Sparkles className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+                            <div className="w-12 h-12 rounded-2xl bg-primary/20 flex items-center justify-center mb-4">
+                                <Sparkles className="h-6 w-6 text-primary" />
                             </div>
                             <h3 className="font-semibold mb-2">Save Together</h3>
-                            <p className="text-sm text-slate-500 dark:text-slate-400">
+                            <p className="text-sm text-muted-foreground">
                                 Split costs and reduce your carbon footprint
                             </p>
                         </CardContent>
@@ -221,17 +221,17 @@ function RideCard({ ride, onJoin, loading, featured }) {
                 <div className="p-5 pb-4">
                     <div className="flex items-start gap-3">
                         <div className="flex flex-col items-center">
-                            <div className="w-3 h-3 rounded-full bg-gradient-to-r from-secondary-400 to-secondary-500 ring-4 ring-secondary-100 dark:ring-secondary-900/30" />
-                            <div className="w-0.5 h-8 bg-gradient-to-b from-secondary-400 to-primary-400 my-1" />
-                            <div className="w-3 h-3 rounded-full bg-gradient-to-r from-primary-400 to-primary-500 ring-4 ring-primary-100 dark:ring-primary-900/30" />
+                            <div className="w-3 h-3 rounded-full bg-secondary ring-4 ring-secondary/30" />
+                            <div className="w-0.5 h-8 bg-border my-1" />
+                            <div className="w-3 h-3 rounded-full bg-primary ring-4 ring-primary/30" />
                         </div>
                         <div className="flex-1 space-y-3 min-w-0">
                             <div>
-                                <p className="text-xs text-slate-400 uppercase tracking-wider mb-0.5">From</p>
+                                <p className="text-xs text-muted-foreground uppercase tracking-wider mb-0.5">From</p>
                                 <p className="font-semibold truncate">{ride.from}</p>
                             </div>
                             <div>
-                                <p className="text-xs text-slate-400 uppercase tracking-wider mb-0.5">To</p>
+                                <p className="text-xs text-muted-foreground uppercase tracking-wider mb-0.5">To</p>
                                 <p className="font-semibold truncate">{ride.to}</p>
                             </div>
                         </div>
@@ -242,7 +242,7 @@ function RideCard({ ride, onJoin, loading, featured }) {
                 </div>
 
                 {/* Meta info */}
-                <div className="px-5 pb-4 flex flex-wrap gap-3 text-sm text-slate-500 dark:text-slate-400">
+                <div className="px-5 pb-4 flex flex-wrap gap-3 text-sm text-muted-foreground">
                     <div className="flex items-center gap-1.5">
                         <Clock className="h-4 w-4" />
                         <span>{format(new Date(ride.timeStart), 'MMM d, h:mm a')}</span>
@@ -254,7 +254,7 @@ function RideCard({ ride, onJoin, loading, featured }) {
                 </div>
 
                 {/* Footer */}
-                <div className="px-5 py-4 border-t border-slate-100 dark:border-slate-700/50 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/30">
+                <div className="px-5 py-4 border-t border-border flex items-center justify-between bg-muted/50">
                     <div className="flex items-center gap-3">
                         <Avatar className="h-9 w-9">
                             <AvatarFallback className="text-sm">

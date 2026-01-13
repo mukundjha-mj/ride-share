@@ -38,7 +38,7 @@ export function Header({ title, showBack = false, actions }) {
     };
 
     return (
-        <header className="sticky top-0 z-40 glass-strong border-b border-slate-200/50 dark:border-slate-700/50">
+        <header className="sticky top-0 z-40 glass-strong border-b border-border">
             <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     {showBack ? (
@@ -50,7 +50,7 @@ export function Header({ title, showBack = false, actions }) {
                             {theme === 'dark' ? (
                                 <Sun className="h-5 w-5 text-amber-500" />
                             ) : (
-                                <Moon className="h-5 w-5 text-slate-600" />
+                                <Moon className="h-5 w-5 text-muted-foreground" />
                             )}
                         </Button>
                     )}

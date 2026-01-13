@@ -14,7 +14,7 @@ export function BottomNav() {
     const { unreadCount } = useSocket();
 
     return (
-        <nav className="fixed bottom-0 left-0 right-0 z-50 glass-strong border-t border-slate-200/50 dark:border-slate-700/50 safe-area-bottom">
+        <nav className="fixed bottom-0 left-0 right-0 z-50 glass-strong border-t border-border safe-area-bottom">
             <div className="max-w-lg mx-auto px-2">
                 <div className="flex items-center justify-around py-2">
                     {navItems.map((item) => (
@@ -25,8 +25,8 @@ export function BottomNav() {
                                 cn(
                                     "flex flex-col items-center gap-1 px-4 py-2 rounded-2xl transition-all duration-200",
                                     isActive
-                                        ? "text-primary-600 bg-primary-50 dark:bg-primary-900/20 dark:text-primary-400"
-                                        : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+                                        ? "text-primary bg-primary/10"
+                                        : "text-muted-foreground hover:text-foreground"
                                 )
                             }
                         >
